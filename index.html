@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!--
+    =========================
+    GOOGLE FONT
+    =========================
+
+    Change this URL to use another Google Font.
+
+    Example:
+    https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap
+  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    /* =========================
+       CUSTOMIZATION
+       ========================= */
+
+    :root {
+      /* Change your font here */
+      --font: "Playfair Display", serif;
+
+      /* Text colors */
+      --digit-color: #1f1f1f;
+      --label-color: #1f1f1f;
+
+      /* Sizes */
+      --digit-size: clamp(38px, 7vw, 82px);
+      --label-size: clamp(10px, 1.5vw, 16px);
+
+      /* Spacing */
+      --gap: clamp(12px, 3vw, 50px);
+
+      /* Background */
+      --background: transparent;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: var(--background);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .countdown {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--gap);
+      text-align: center;
+      align-items: start;
+      padding: 10px;
+    }
+
+    .time-unit {
+      min-width: 0;
+    }
+
+    .number {
+      font-family: var(--font);
+      font-size: var(--digit-size);
+      font-weight: 500;
+      line-height: 1;
+      color: var(--digit-color);
+
+      /* Prevent numbers jumping around visually */
+      font-variant-numeric: tabular-nums;
+    }
+
+    .label {
+      margin-top: 12px;
+      font-family: var(--font);
+      font-size: var(--label-size);
+      font-weight: 400;
+      color: var(--label-color);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 500px) {
+      .countdown {
+        gap: 8px;
+        padding: 5px;
+      }
+
+      .label {
+        margin-top: 6px;
+        letter-spacing: 0.08em;
+      }
+    }
+
+    /* When countdown finishes */
+    .finished {
+      grid-column: 1 / -1;
+      font-family: var(--font);
+      font-size: clamp(30px, 7vw, 70px);
+      color: var(--digit-color);
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="countdown" id="countdown">
+
+    <div class="time-unit">
+      <div class="number" id="days">000</div>
+      <div class="label">Days</div>
+    </div>
+
+    <div class="time-unit">
+      <div class="number" id="hours">00</div>
+      <div class="label">Hours</div>
+    </div>
+
+    <div class="time-unit">
+      <div class="number" id="minutes">00</div>
+      <div class="label">Minutes</div>
+    </div>
+
+    <div class="time-unit">
+      <div class="number" id="seconds">00</div>
+      <div class="label">Seconds</div>
+    </div>
+
+  </div>
+
+
+  <script>
+    /* =====================================
+       CONFIGURATION
+       ===================================== */
+
+    /*
+      CHANGE THIS DATE!
+
+      Format:
+      YYYY-MM-DDTHH:MM:SS+07:00
+
+      Example for Bangkok:
+      2027-12-25T18:00:00+07:00
+
+      The +07:00 ensures the countdown refers
+      to Bangkok time regardless of where the
+      visitor is located.
+    */
+
+    const TARGET_DATE = "2027-12-25T18:00:00+07:00";
+
+
+    /* =====================================
+       COUNTDOWN LOGIC
+       ===================================== */
+
+    const targetTime = new Date(TARGET_DATE).getTime();
+
+    const elements = {
+      days: document.getElementById("days"),
+      hours: document.getElementById("hours"),
+      minutes: document.getElementById("minutes"),
+      seconds: document.getElementById("seconds"),
+      countdown: document.getElementById("countdown")
+    };
+
+
+    function updateCountdown() {
+      const now = Date.now();
+      const difference = targetTime - now;
+
+
+      // Countdown finished
+      if (difference <= 0) {
+        elements.countdown.innerHTML = `
+          <div class="finished">
+            We're Married!
+          </div>
+        `;
+
+        clearInterval(timer);
+        return;
+      }
+
+
+      // Calculate units
+      const days = Math.floor(
+        difference / (1000 * 60 * 60 * 24)
+      );
+
+      const hours = Math.floor(
+        (difference / (1000 * 60 * 60)) % 24
+      );
+
+      const minutes = Math.floor(
+        (difference / (1000 * 60)) % 60
+      );
+
+      const seconds = Math.floor(
+        (difference / 1000) % 60
+      );
+
+
+      // Display values
+      elements.days.textContent =
+        String(days).padStart(3, "0");
+
+      elements.hours.textContent =
+        String(hours).padStart(2, "0");
+
+      elements.minutes.textContent =
+        String(minutes).padStart(2, "0");
+
+      elements.seconds.textContent =
+        String(seconds).padStart(2, "0");
+    }
+
+
+    // Run immediately
+    updateCountdown();
+
+    // Update every second
+    const timer = setInterval(updateCountdown, 1000);
+
+  </script>
+
+</body>
+</html>
